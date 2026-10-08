@@ -315,6 +315,18 @@ label {
         font-size: 10px;
         font-weight: bold;
         line-height: 1.1;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .campo-lote {
+        display: inline-block;
+        border: 1px solid #000;
+        min-width: 40px;
+        height: 13px;
+        padding: 0 3px;
+        line-height: 11px;
     }
 
     .etq-direita {

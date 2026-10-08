@@ -34,7 +34,7 @@ async function atualizarOpcoesDoServidor() {
                 'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
             }
         });
-        
+
         if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`)
 
         const novasOpcoes = await resposta.json();
@@ -83,10 +83,10 @@ function preencherSelect(elementId, itens) {
 
 async function enviarFormulario() {
     event.preventDefault();
-    
+
     const btnSubmit = event.target.querySelector('button[type="submit"]');
     if (btnSubmit.disabled) return;
-    
+
     btnSubmit.disabled = true;
 
     // Elementos do formulário
@@ -113,9 +113,10 @@ async function enviarFormulario() {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json",
+            headers: {
+                "Content-Type": "application/json",
                 'ngrok-skip-browser-warning': 'true'
-             },
+            },
             body: JSON.stringify(dados)
         });
 
@@ -278,7 +279,6 @@ function imprimirEtiquetaUnica() {
                     background: #fff;
                     font-family: Arial, sans-serif;
                 }
-                /* CORREÇÃO: position relative para permitir multiplas páginas */
                 .card-etiqueta-print {
                     position: relative !important;
                     page-break-after: always !important;
@@ -295,7 +295,6 @@ function imprimirEtiquetaUnica() {
                     overflow: hidden;
                     background: #fff;
                 }
-                /* Impede folha em branco extra após a última etiqueta */
                 .card-etiqueta-print:last-child {
                     page-break-after: avoid !important;
                     break-after: avoid !important;
@@ -328,6 +327,17 @@ function imprimirEtiquetaUnica() {
                     font-size: 10px;
                     font-weight: bold;
                     line-height: 1.1;
+                    display: flex;
+                    align-items: center;
+                    gap: 4px;
+                }
+                .campo-lote {
+                    display: inline-block;
+                    border: 1px solid #000;
+                    min-width: 40px;
+                    height: 13px;
+                    padding: 0 3px;
+                    line-height: 11px;
                 }
                 .etq-direita {
                     display: flex;
@@ -372,21 +382,33 @@ function imprimirEtiquetaUnica() {
         const etq = etiquetasLoteAtual[idx];
 
         const horaExibicao = etq.hora_geracao || etq.hora || horaAtual;
-        const dataExibicao = etq.dta_geracao || etq.data || agora.toLocaleDateString('pt-BR');
+        const resinaExibicao = etq.resina || etq.RESINA || 'N/A';
+
+        // Formatação garantida da data em DD/MM/YYYY
+        let dataExibicao = agora.toLocaleDateString('pt-BR');
+        const dataBruta = etq.dta_geracao || etq.data;
+
+        if (dataBruta) {
+            const d = new Date(dataBruta);
+            if (!isNaN(d.getTime())) {
+                dataExibicao = d.toLocaleDateString('pt-BR');
+            }
+        }
 
         const card = docFrame.createElement('div');
         card.className = 'card-etiqueta-print';
         
         card.innerHTML = `
             <div class="etq-info">
-                <div class="etq-caixa">${etq.caixa || 'Caixa'}</div>
+                <div class="etq-caixa">Caixa: "${etq.caixa || ''}"</div>
                 <div class="etq-grid">
                     <div>DEPÓSITO: ${etq.deposito || 'XXXX'}</div>
                     <div>DATA: ${dataExibicao}</div>
-                    <div>N° CAIXA: ${etq.seq_pallet}</div>
+                    <div>N° CAIXA: ${etq.seq_pallet || ''}</div>
                     <div>HORÁRIO: ${horaExibicao}</div>
+                    <div>RESINA: ${resinaExibicao}</div>
                 </div>
-                <div class="etq-lote">Lote: ${etq.lote_id}</div>
+                <div class="etq-lote">Lote: <span class="campo-lote">${etq.lote || etq.lote_id || ''}</span></div>
             </div>
             <div class="etq-direita">
                 <div class="etq-qrcode" id="qr_${idx}"></div>
@@ -427,7 +449,7 @@ let etiquetasBipadas = [];
 // Função auxiliar para resetar o estado da saída
 function limparModalSaida() {
     etiquetasBipadas = [];
-    
+
     const lista = document.getElementById('listaBipados');
     if (lista) lista.innerHTML = '';
 
@@ -446,7 +468,7 @@ function abrirModalSaida() {
 
     const modalBkg = document.getElementById('modalSaida-bkg');
     if (modalBkg) modalBkg.style.display = 'block';
-    
+
     const input = document.getElementById('inputBipador');
     if (input) {
         input.value = '';
@@ -467,11 +489,11 @@ const inputBipadorElem = document.getElementById('inputBipador');
 if (inputBipadorElem) {
     // Remove qualquer ouvinte antigo antes de adicionar o novo
     inputBipadorElem.replaceWith(inputBipadorElem.cloneNode(true));
-    
+
     // Pega a nova referência do elemento clonado
     const novoInputBipador = document.getElementById('inputBipador');
 
-    novoInputBipador.addEventListener('keydown', function(e) {
+    novoInputBipador.addEventListener('keydown', function (e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             e.stopPropagation(); // Impede que o evento suba ou seja executado mais de uma vez
@@ -491,7 +513,7 @@ if (inputBipadorElem) {
             // Adiciona a etiqueta
             etiquetasBipadas.push(codigo);
             atualizarListaBipados();
-            
+
             this.value = '';
             this.focus();
         }
@@ -501,9 +523,9 @@ if (inputBipadorElem) {
 function atualizarListaBipados() {
     const lista = document.getElementById('listaBipados');
     if (!lista) return;
-    
+
     lista.innerHTML = '';
-    
+
     etiquetasBipadas.forEach((cod, index) => {
         const li = document.createElement('li');
         li.style.display = 'flex';
@@ -541,9 +563,10 @@ async function finalizarSaida() {
     try {
         const response = await fetch(`${URL}/api/saida`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json',
+            headers: {
+                'Content-Type': 'application/json',
                 'ngrok-skip-browser-warning': 'true'
-             },
+            },
             body: JSON.stringify({
                 etiquetas: etiquetasBipadas,
                 notaFiscal: notaSaida
