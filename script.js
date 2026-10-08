@@ -1,5 +1,5 @@
-const API_URL = 'http://localhost:3000/api/etiquetas';
-
+const URL = 'https://wolverine-concave-baggie.ngrok-free.dev';
+const API_URL = `${URL}/api/etiquetas`;
 /**
  * Carrega opções de um dropdown com suporte a cache local (stale-while-revalidate).
  * @param {string} selectId - ID do elemento <select>
@@ -29,7 +29,7 @@ async function inicializarDropdowns() {
 
 async function atualizarOpcoesDoServidor() {
     try {
-        const resposta = await fetch('http://localhost:3000/api/opcoes');
+        const resposta = await fetch(`${URL}/api/opcoes`);
         
         if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
 
@@ -128,7 +128,7 @@ async function enviarFormulario() {
     }
 }
 
-const URL = 'http://localhost:3000';
+
 // 1. Carrega a lista de Chegadas Gerais (Sem o botão de imprimir lote e sem TIPO)
 async function carregarChegadasGerais() {
     try {
