@@ -424,8 +424,24 @@ function fecharModalGerenciador() {
 
 let etiquetasBipadas = [];
 
+// Função auxiliar para resetar o estado da saída
+function limparModalSaida() {
+    etiquetasBipadas = [];
+    
+    const lista = document.getElementById('listaBipados');
+    if (lista) lista.innerHTML = '';
+
+    const total = document.getElementById('totalBipados');
+    if (total) total.innerText = '0';
+
+    const inputBipador = document.getElementById('inputBipador');
+    if (inputBipador) inputBipador.value = '';
+
+    const notaSaida = document.getElementById('notaSaida');
+    if (notaSaida) notaSaida.value = '';
+}
+
 function abrirModalSaida() {
-    // Limpa completamente antes de abrir
     limparModalSaida();
 
     const modalBkg = document.getElementById('modalSaida-bkg');
@@ -433,6 +449,7 @@ function abrirModalSaida() {
     
     const input = document.getElementById('inputBipador');
     if (input) {
+        input.value = '';
         input.focus();
     }
 }
@@ -441,49 +458,69 @@ function fecharModalSaida() {
     const modalBkg = document.getElementById('modalSaida-bkg');
     if (modalBkg) modalBkg.style.display = 'none';
 
-    // Limpa o estado ao fechar/cancelar
     limparModalSaida();
 }
 
-// O coletor de código de barras envia 'Enter' automaticamente após o bip
-document.getElementById('inputBipador').addEventListener('keypress', function(e) {
-    if (e.key === 'Enter') {
-        e.preventDefault();
-        const codigo = this.value.trim();
+// LÓGICA DO BIPADOR: Usamos 'change' ou evitamos acúmulo limpando o listener antigo
+const inputBipadorElem = document.getElementById('inputBipador');
 
-        if (!codigo) return;
+if (inputBipadorElem) {
+    // Remove qualquer ouvinte antigo antes de adicionar o novo
+    inputBipadorElem.replaceWith(inputBipadorElem.cloneNode(true));
+    
+    // Pega a nova referência do elemento clonado
+    const novoInputBipador = document.getElementById('inputBipador');
 
-        if (etiquetasBipadas.includes(codigo)) {
-            alert('Esta etiqueta já foi bipada nesta sessão!');
+    novoInputBipador.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            e.stopPropagation(); // Impede que o evento suba ou seja executado mais de uma vez
+
+            // Limpa caracteres de controle invisíveis e espaços
+            const codigo = this.value.replace(/[\r\n]/g, '').trim();
+
+            if (!codigo) return;
+
+            // Checa se já existe no array
+            if (etiquetasBipadas.includes(codigo)) {
+                alert(`A etiqueta "${codigo}" já foi bipada nesta sessão!`);
+                this.value = '';
+                return;
+            }
+
+            // Adiciona a etiqueta
+            etiquetasBipadas.push(codigo);
+            atualizarListaBipados();
+            
             this.value = '';
-            return;
+            this.focus();
         }
-
-        etiquetasBipadas.push(codigo);
-        atualizarListaBipados();
-        this.value = '';
-        this.focus();
-    }
-});
+    });
+}
 
 function atualizarListaBipados() {
     const lista = document.getElementById('listaBipados');
+    if (!lista) return;
+    
     lista.innerHTML = '';
     
     etiquetasBipadas.forEach((cod, index) => {
         const li = document.createElement('li');
         li.style.display = 'flex';
         li.style.justifyContent = 'space-between';
-        li.style.padding = '4px 0';
-        li.style.borderBottom = '1px solid #eee';
+        li.style.padding = '6px 0';
+        li.style.borderBottom = '1px solid #444';
         li.innerHTML = `
             <span><strong>#${index + 1}</strong> - ${cod}</span>
-            <button onclick="removerBipado(${index})" style="color:red; border:none; background:none; cursor:pointer;">X</button>
+            <button type="button" onclick="removerBipado(${index})" style="color:#ff4d4d; border:none; background:none; cursor:pointer; font-weight:bold;">X</button>
         `;
         lista.appendChild(li);
     });
 
-    document.getElementById('totalBipados').innerText = etiquetasBipadas.length;
+    const totalElem = document.getElementById('totalBipados');
+    if (totalElem) {
+        totalElem.innerText = etiquetasBipadas.length;
+    }
 }
 
 function removerBipado(index) {
@@ -526,20 +563,4 @@ async function finalizarSaida() {
         console.error('Erro de rede na saída:', erro);
         alert('Falha ao se comunicar com o servidor.');
     }
-}
-
-function limparModalSaida() {
-    etiquetasBipadas = [];
-    
-    const lista = document.getElementById('listaBipados');
-    if (lista) lista.innerHTML = '';
-
-    const total = document.getElementById('totalBipados');
-    if (total) total.innerText = '0';
-
-    const inputBipador = document.getElementById('inputBipador');
-    if (inputBipador) inputBipador.value = '';
-
-    const notaSaida = document.getElementById('notaSaida');
-    if (notaSaida) notaSaida.value = '';
 }
