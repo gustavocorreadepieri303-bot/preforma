@@ -425,19 +425,24 @@ function fecharModalGerenciador() {
 let etiquetasBipadas = [];
 
 function abrirModalSaida() {
-    etiquetasBipadas = [];
-    document.getElementById('listaBipados').innerHTML = '';
-    document.getElementById('totalBipados').innerText = '0';
-    document.getElementById('notaSaida').value = '';
-    document.getElementById('modalSaida-bkg').style.display = 'block';
+    // Limpa completamente antes de abrir
+    limparModalSaida();
+
+    const modalBkg = document.getElementById('modalSaida-bkg');
+    if (modalBkg) modalBkg.style.display = 'block';
     
     const input = document.getElementById('inputBipador');
-    input.value = '';
-    input.focus();
+    if (input) {
+        input.focus();
+    }
 }
 
 function fecharModalSaida() {
-    document.getElementById('modalSaida-bkg').style.display = 'none';
+    const modalBkg = document.getElementById('modalSaida-bkg');
+    if (modalBkg) modalBkg.style.display = 'none';
+
+    // Limpa o estado ao fechar/cancelar
+    limparModalSaida();
 }
 
 // O coletor de código de barras envia 'Enter' automaticamente após o bip
@@ -521,4 +526,20 @@ async function finalizarSaida() {
         console.error('Erro de rede na saída:', erro);
         alert('Falha ao se comunicar com o servidor.');
     }
+}
+
+function limparModalSaida() {
+    etiquetasBipadas = [];
+    
+    const lista = document.getElementById('listaBipados');
+    if (lista) lista.innerHTML = '';
+
+    const total = document.getElementById('totalBipados');
+    if (total) total.innerText = '0';
+
+    const inputBipador = document.getElementById('inputBipador');
+    if (inputBipador) inputBipador.value = '';
+
+    const notaSaida = document.getElementById('notaSaida');
+    if (notaSaida) notaSaida.value = '';
 }
