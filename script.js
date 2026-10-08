@@ -29,9 +29,13 @@ async function inicializarDropdowns() {
 
 async function atualizarOpcoesDoServidor() {
     try {
-        const resposta = await fetch(`${URL}/api/opcoes`);
+        const resposta = await fetch(`${URL}/api/opcoes`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
+            }
+        });
         
-        if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`);
+        if (!resposta.ok) throw new Error(`Erro HTTP: ${resposta.status}`)
 
         const novasOpcoes = await resposta.json();
 
