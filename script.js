@@ -113,7 +113,9 @@ async function enviarFormulario() {
     try {
         const response = await fetch(API_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json",
+                'ngrok-skip-browser-warning': 'true'
+             },
             body: JSON.stringify(dados)
         });
 
@@ -136,7 +138,11 @@ async function enviarFormulario() {
 // 1. Carrega a lista de Chegadas Gerais (Sem o botão de imprimir lote e sem TIPO)
 async function carregarChegadasGerais() {
     try {
-        const res = await fetch(`${URL}/api/lotes`);
+        const res = await fetch(`${URL}/api/lotes`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
+            }
+        });
         if (!res.ok) throw new Error(`Erro: ${res.status}`);
 
         const json = await res.json();
@@ -175,7 +181,12 @@ let etiquetasLoteAtual = [];
 
 async function abrirDetalhesLote(loteId) {
     try {
-        const res = await fetch(`${URL}/api/lotes/${loteId}/etiquetas`);
+        const res = await fetch(`${URL}/api/lotes/${loteId}/etiquetas`, {
+            headers: {
+                'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
+            }
+        }
+        );
         const json = await res.json();
 
         if (!res.ok) {
@@ -488,7 +499,9 @@ async function finalizarSaida() {
     try {
         const response = await fetch(`${URL}/api/saida`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/json',
+                'ngrok-skip-browser-warning': 'true'
+             },
             body: JSON.stringify({
                 etiquetas: etiquetasBipadas,
                 notaFiscal: notaSaida
