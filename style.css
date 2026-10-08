@@ -1,0 +1,358 @@
+.body {
+    background-color: rgb(50, 50, 50);
+    color: rgb(228, 228, 228);
+    justify-items: center;
+    text-align: center;
+    height: auto;
+
+}
+
+.header {
+    background-color: rgb(80, 80, 80);
+    height: 80px;
+    width: 80%;
+    justify-self: center;
+    align-content: center;
+    margin: 30px;
+    border-radius: 15px;
+}
+
+.content, #form {
+    background-color: rgb(80, 80, 80);
+    height: auto;
+    min-height: 400px;
+    width: 75%;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+}
+
+.input-space {
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    width: 200px;
+    gap: 5px;
+    justify-content: center;
+}
+
+
+
+#input-cxs,
+#qntd-cxs,
+#input-resina,
+#input-fornecedores,
+#input-deposito,
+#numero-nota {
+    height: 30px;
+    width: 200px;
+    text-align: center;
+}
+
+#nome-cadastro {
+    height: 30px;
+    width: 357px;
+    text-align: center;
+}
+
+.b-space {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+}
+
+.button {
+    height: 40px;
+    width: 170px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.space {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.container-btns {
+    align-self: last baseline;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    justify-content: center;
+    position: absolute;
+}
+
+/* Container Principal */
+.container-etq-bkg {
+  font-family: Arial, sans-serif;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color: rgba(29, 29, 29, 0.329);
+  border-radius: 10px;
+  z-index: 1000;
+  top: 0;
+  left: 0;
+  align-content: center;
+  display: none;
+}
+
+.container-gerenciador {
+  margin-top: 20px;
+  height: auto;
+  min-height: 700px;
+  width: 60%;
+  background-color: rgb(80, 80, 80);
+  border-radius: 10px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  justify-self: center;
+}
+
+.header-gerenciador {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  justify-content: space-between;
+}
+
+.btn-atualizar, .btn-fechar {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+/* Tabelas */
+.tabela-dados {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.tabela-dados th, 
+.tabela-dados td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  color: rgb(126, 126, 126);
+}
+
+.tabela-dados th {
+  background-color: #f2f2f2;
+}
+
+.texto-vazio {
+  text-align: center;
+}
+
+/* Badges e Status */
+.badge-aceite {
+  background: #b3e5fc;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.status-ok {
+  color: green;
+  font-weight: bold;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.modal-conteudo {
+  background: #fff;
+  width: 80%;
+  margin: 5% auto;
+  padding: 20px;
+  border-radius: 8px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tabela-modal {
+  margin-top: 15px;
+}
+
+#areaImpressao {
+    display: none;
+}
+
+@media print {
+    /* Oculta tudo que está dentro do body por padrão */
+    body * {
+        visibility: hidden !important;
+    }
+
+    /* Força APENAS o container de impressão e seus elementos internos a ficarem visíveis */
+    #areaImpressao, 
+    #areaImpressao * {
+        visibility: visible !important;
+    }
+
+    /* Posiciona a área de impressão ocupando o topo da folha */
+    #areaImpressao {
+        display: block !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 120mm !important;
+        height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: #fff !important;
+    }
+
+    /* Configuração da página da impressora térmica (12cm x 3cm) */
+    @page {
+        margin: 0;
+        size: 120mm 30mm;
+    }
+
+    /* Layout da Etiqueta */
+    .card-etiqueta-print {
+        page-break-after: always;
+        page-break-inside: avoid;
+        break-after: page;
+        width: 120mm;
+        height: 30mm;
+        box-sizing: border-box;
+        border: 1px solid #000;
+        padding: 2mm 4mm;
+        font-family: Arial, sans-serif;
+        background: #fff;
+        color: #000;
+        display: flex !important;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    /* Evita folha em branco no final */
+    .card-etiqueta-print:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .etq-info {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+        width: 75%;
+    }
+
+    .etq-caixa {
+        font-size: 16px;
+        font-weight: bold;
+        line-height: 1.1;
+        margin-bottom: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .etq-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        row-gap: 2px;
+        column-gap: 8px;
+        font-size: 10px;
+        font-weight: bold;
+        line-height: 1.1;
+    }
+
+    .etq-lote {
+        font-size: 10px;
+        font-weight: bold;
+        line-height: 1.1;
+    }
+
+    .etq-direita {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+        height: 100%;
+        width: 23%;
+    }
+
+    .etq-qrcode img, .etq-qrcode canvas {
+        width: 22mm !important;
+        height: 22mm !important;
+        display: block !important;
+    }
+
+    .etq-serie {
+        font-size: 7px;
+        font-weight: bold;
+        color: #000;
+        word-break: break-all;
+        text-align: right;
+        line-height: 1;
+    }
+}
+
+.input-qntd-nt {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+#modalSaida-bkg {
+    display: none;
+    position: absolute;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    align-content: center;
+}
+
+.modal {
+    background-color: rgb(80, 80, 80);
+    width: 50%;
+    min-height: 600px;
+    justify-self: center;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+}
+
+.modal-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+    margin-top: auto;
+    gap: 10px;
+}

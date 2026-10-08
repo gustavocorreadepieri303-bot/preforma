@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="script.js" defer></script>
+</head>
+
+<body class="body">
+
+    <div class="header">
+        <h1>Chegada de Preforma</h1>
+    </div>
+
+
+    <div class="content">
+        <form id="form" onsubmit="enviarFormulario()">
+            <label for="dropdown-cxs">Escolha a Preforma e Resina:</label>
+            <div class="input-space">
+                <input list="dropdown-cxs" id="input-cxs" placeholder="Digite ou selecione a caixa..." required
+                    class="campo-pesquisa">
+                <datalist id="dropdown-cxs">
+                    <option value="Carregando...">
+                </datalist>
+                <input list="dropdown-resina" id="input-resina" placeholder="Digite ou selecione a resina..." required
+                    class="campo-pesquisa">
+                <datalist id="dropdown-resina">
+                    <option value="Carregando...">
+                </datalist>
+
+            </div>
+            <label for="dropdown-fornecedores">Escolha o fornecedor e o depósito:</label>
+            <div class="input-space">
+                <div class="fornecedor">
+                    <input list="dropdown-fornecedores" id="input-fornecedores"
+                        placeholder="Digite ou selecione o fornecedor..." class="campo-pesquisa" required>
+                    <datalist id="dropdown-fornecedores">
+                        <option value="Carregando...">
+                    </datalist>
+                </div>
+                <div class="deposito">
+                    <input list="dropdown-deposito" id="input-deposito" placeholder="Digite ou selecione o depósito..."
+                        required class="campo-pesquisa">
+                    <datalist id="dropdown-deposito">
+                        <option value="Carregando...">
+                    </datalist>
+                </div>
+            </div>
+            <label for="qntd-cxs">Quantidade de caixas e nota fiscal:</label>
+            <div class="input-qntd-nt">
+                <div class="input-caixas">
+                    <input type="number" id="qntd-cxs" name="qntd-cxs" min="1" placeholder="Quantidade de caixas..."
+                        required>
+                </div>
+                <div class="input-nota">
+                    <input type="number" id="numero-nota" name="numero-nota" min="1"
+                        placeholder="Número da nota fiscal..." required>
+                </div>
+            </div>
+            <div class="space">
+                <div class="b-space">
+                    <button type="button" class="button" onclick="abrirModalSaida()">
+                        <h3>Saída</h3>
+                    </button>
+                    <button type="submit" class="button">
+                        <h3>Enviar</h3>
+                    </button>
+                </div>
+                <button type="button"
+                    onclick="carregarChegadasGerais(), document.getElementsByClassName('container-etq-bkg')[0].style.display = 'block'"
+                    class="button">
+                    <h3>Imprimir Etiquetas</h3>
+                </button>
+        </form>
+    </div>
+
+    <!-- Seção: Gerenciador de Lotes e Etiquetas -->
+    <div class="container-etq-bkg">
+        <div class="container-gerenciador">
+            <div class="header-gerenciador">
+                <h2>Chegadas Gerais (Lotes)</h2>
+                <div>
+                    <button type="button" class="btn-atualizar" onclick="carregarChegadasGerais()">🔄 Atualizar
+                        Lista</button>
+                    <button type="button" class="btn-fechar" onclick="fecharModalGerenciador()">❌ Fechar</button>
+                </div>
+            </div>
+
+            <!-- TABELA 1: Lotes (PAI) -->
+            <table class="tabela-dados">
+                <thead>
+                    <tr>
+                        <th>AÇÕES</th>
+                        <th>ORDEM</th>
+                        <!-- Coluna TIPO removida -->
+                        <th>AVISO</th>
+                        <th>LOCAL</th>
+                        <th>DATA CAD.</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaLotesBody">
+                    <tr>
+                        <td colspan="5" class="texto-vazio">Clique em "Imprimir Etiquetas" ou "Atualizar Lista" para
+                            carregar os lotes.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="modalEtiquetas" class="modal-overlay">
+            <div class="modal-conteudo">
+                <div class="modal-header">
+                    <h3 id="tituloModalEtiquetas">Etiquetas do Lote</h3>
+                    <div>
+                        <!-- Botão para imprimir apenas as selecionadas via checkbox -->
+                        <button type="button" class="btn-atualizar" onclick="imprimirEtiquetaUnica()">🖨️ Imprimir
+                            Selecionadas</button>
+                        <button type="button" class="btn-fechar" onclick="fecharModalEtiquetas()">❌ Fechar</button>
+                    </div>
+                </div>
+
+                <!-- TABELA: Removida a coluna ACEITE -->
+                <table class="tabela-dados tabela-modal">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="checkTodos" onclick="marcarTodosEtiquetas(this)"></th>
+                            <th>NR. ETIQUETA</th>
+                            <th>SEQ. PALLET</th>
+                            <th>STATUS</th>
+                            <th>DATA GERAÇÃO</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabelaEtiquetasBody">
+                        <!-- Preenchido via JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- CONTAINER OCULTO PARA A IMPRESSÃO NA PRÓPRIA ABA -->
+    <div id="areaImpressao"></div>
+
+    <!-- Modal Saída / Coletor -->
+    <div id="modalSaida-bkg">
+        <div id="modalSaida" class="modal">
+            <div class="modal-content">
+                <h2>Coletor de Saída (Bipador)</h2>
+
+                <div class="form-group">
+                    <label for="inputBipador">Bipe a Etiqueta aqui:</label>
+                    <input type="text" id="inputBipador" placeholder="Aguardando leitura do leitor..." autofocus>
+                </div>
+
+                <div class="form-group" style="margin-top: 10px;">
+                    <label for="notaSaida">Nota Fiscal de Saída (opcional):</label>
+                    <input type="text" id="notaSaida" placeholder="N° da NF de Saída">
+                </div>
+
+                <h3>Caixas Bipadas (<span id="totalBipados">0</span>)</h3>
+                <ul id="listaBipados"
+                    style="max-height: 200px; overflow-y: auto; border: 1px solid #ccc; padding: 10px; list-style: none;">
+                    <!-- Itens bipados entram aqui -->
+                </ul>
+
+                <div class="btn-group">
+                    <button type="button" onclick="finalizarSaida()" class="btn-sucesso">Finalizar Saída</button>
+                    <button type="button" onclick="fecharModalSaida()" class="btn-cancelar">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
