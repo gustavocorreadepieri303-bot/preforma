@@ -100,6 +100,7 @@ async function enviarFormulario(event) {
     if (event) {
         event.preventDefault();
     }
+    alert('Enviando dados para o servidor...');
 
     const form = document.getElementById('form');
     const btnSubmit = form ? form.querySelector('button[type="submit"]') : null;
