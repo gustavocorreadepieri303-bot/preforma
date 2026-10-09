@@ -58,10 +58,9 @@ label {
 /* Flexbox Responsivo para Inputs */
 .input-space, .input-qntd-nt {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+    flex-direction: row;    
     width: 100%;
-    max-width: 600px;
+    max-width: 500px;
     gap: 10px;
     justify-content: center;
 }
@@ -360,7 +359,7 @@ label {
         padding: 15px 10px;
     }
 
-    .input-space, .input-qntd-nt {
+    .input-qntd-nt {
         flex-direction: column;
         align-items: center;
     }
