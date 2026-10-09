@@ -29,7 +29,7 @@ async function inicializarDropdowns() {
 
 async function atualizarOpcoesDoServidor() {
     try {
-        const resposta = await fetch(`${URL}/api/opcoes`, {
+        const resposta = await fetchComRetry(`${URL}/api/opcoes`, {
             headers: {
                 'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
             }
@@ -81,27 +81,35 @@ function preencherSelect(elementId, itens) {
     }
 }
 
-async function enviarFormulario() {
-    event.preventDefault();
+async function fetchComRetry(url, opcoes, tentativas = 3) {
+    for (let i = 0; i < tentativas; i++) {
+        try {
+            const resposta = await fetchComRetry(url, opcoes);
+            if (resposta.ok) return resposta;
+        } catch (erro) {
+            console.warn(`Tentativa ${i + 1} de ${tentativas} falhou. A tentar novamente...`);
+            if (i === tentativas - 1) throw erro; // Lança o erro se atingir a última tentativa
+            await new Promise(resolve => setTimeout(resolve, 1000)); // Aguarda 1 segundo antes de tentar de novo
+        }
+    }
+}
 
-    const btnSubmit = event.target.querySelector('button[type="submit"]');
-    if (btnSubmit.disabled) return;
+async function enviarFormulario(event) {
+    if (event) event.preventDefault();
+    
+    const btnSubmit = document.querySelector('#form button[type="submit"]') || event?.target?.querySelector('button[type="submit"]');
+    if (btnSubmit && btnSubmit.disabled) return;
+    if (btnSubmit) btnSubmit.disabled = true;
 
-    btnSubmit.disabled = true;
-    alert('Enviando dados para o servidor...');
-
-    // Elementos do formulário
     const selectCaixa = document.getElementById('input-cxs');
     const selectResina = document.getElementById('input-resina');
     const selectFornecedor = document.getElementById('input-fornecedores');
     const selectDeposito = document.getElementById('input-deposito');
     const inputQntd = document.getElementById('qntd-cxs');
-    const inputNota = document.getElementById('numero-nota'); // Campo da Nota Fiscal
-
-    const notaValor = inputNota ? inputNota.value.trim() : '';
+    const inputNota = document.getElementById('numero-nota');
 
     const dados = {
-        notaFiscal: notaValor, // Chave enviada para o Node.js
+        notaFiscal: inputNota ? inputNota.value.trim() : '',
         caixa: selectCaixa ? selectCaixa.value : '',
         resina: selectResina ? selectResina.value : '',
         fornecedor: selectFornecedor ? selectFornecedor.value : '',
@@ -109,12 +117,11 @@ async function enviarFormulario() {
         qntdCxs: inputQntd ? inputQntd.value : '1'
     };
 
-    console.log("📤 Dados enviados para o servidor:", dados);
-
     try {
-        const response = await fetch(API_URL, {
+        // Utiliza o fetchComRetry em vez do fetch comum
+        const response = await fetchComRetry(API_URL, {
             method: "POST",
-            headers: {
+            headers: { 
                 "Content-Type": "application/json",
                 'ngrok-skip-browser-warning': 'true'
             },
@@ -131,8 +138,9 @@ async function enviarFormulario() {
 
     } catch (erro) {
         console.error('Erro de conexão com o servidor Node.js:', erro);
+        alert('Ocorreu uma falha na comunicação com o servidor. Por favor, tente novamente.');
     } finally {
-        btnSubmit.disabled = false;
+        if (btnSubmit) btnSubmit.disabled = false;
     }
 }
 
@@ -140,7 +148,7 @@ async function enviarFormulario() {
 // 1. Carrega a lista de Chegadas Gerais (Sem o botão de imprimir lote e sem TIPO)
 async function carregarChegadasGerais() {
     try {
-        const res = await fetch(`${URL}/api/lotes`, {
+        const res = await fetchComRetry(`${URL}/api/lotes`, {
             headers: {
                 'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
             }
@@ -183,7 +191,7 @@ let etiquetasLoteAtual = [];
 
 async function abrirDetalhesLote(loteId) {
     try {
-        const res = await fetch(`${URL}/api/lotes/${loteId}/etiquetas`, {
+        const res = await fetchComRetry(`${URL}/api/lotes/${loteId}/etiquetas`, {
             headers: {
                 'ngrok-skip-browser-warning': 'true' // Ignora o aviso do ngrok
             }
@@ -563,7 +571,7 @@ async function finalizarSaida() {
 
     try {
         alert('Enviando dados de saída para o servidor...');
-        const response = await fetch(`${URL}/api/saida`, {
+        const response = await fetchComRetry(`${URL}/api/saida`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
