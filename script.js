@@ -88,6 +88,7 @@ async function enviarFormulario() {
     if (btnSubmit.disabled) return;
 
     btnSubmit.disabled = true;
+    alert('Enviando dados para o servidor...');
 
     // Elementos do formulário
     const selectCaixa = document.getElementById('input-cxs');
@@ -561,6 +562,7 @@ async function finalizarSaida() {
     if (!confirm(`Deseja confirmar a SAÍDA de ${etiquetasBipadas.length} caixa(s)?`)) return;
 
     try {
+        alert('Enviando dados de saída para o servidor...');
         const response = await fetch(`${URL}/api/saida`, {
             method: 'POST',
             headers: {
