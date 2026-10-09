@@ -56,7 +56,7 @@ label {
 }
 
 /* Flexbox Responsivo para Inputs */
-.input-space, .input-qntd-nt {
+.input-space{
     display: flex;
     flex-direction: row;    
     width: 100%;
