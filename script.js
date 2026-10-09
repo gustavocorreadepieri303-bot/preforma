@@ -84,7 +84,7 @@ function preencherSelect(elementId, itens) {
 async function fetchComRetry(url, opcoes, tentativas = 3) {
     for (let i = 0; i < tentativas; i++) {
         try {
-            const resposta = await fetchComRetry(url, opcoes);
+            const resposta = await fetch(url, opcoes);
             if (resposta.ok) return resposta;
         } catch (erro) {
             console.warn(`Tentativa ${i + 1} de ${tentativas} falhou. A tentar novamente...`);
