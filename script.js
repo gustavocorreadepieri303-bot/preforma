@@ -82,6 +82,7 @@ function preencherSelect(elementId, itens) {
 }
 
 async function fetchComRetry(url, opcoes, tentativas = 3) {
+    event.preventDefault(); // Impede o comportamento padrão do evento de envio do formulário
     for (let i = 0; i < tentativas; i++) {
         try {
             const resposta = await fetch(url, opcoes);
@@ -95,12 +96,18 @@ async function fetchComRetry(url, opcoes, tentativas = 3) {
 }
 
 async function enviarFormulario(event) {
-    if (event) event.preventDefault();
-    
-    const btnSubmit = document.querySelector('#form button[type="submit"]') || event?.target?.querySelector('button[type="submit"]');
-    if (btnSubmit && btnSubmit.disabled) return;
+    // 1. Impede o recarregamento da página e a alteração da URL
+    if (event) {
+        event.preventDefault();
+    }
+
+    const form = document.getElementById('form');
+    const btnSubmit = form ? form.querySelector('button[type="submit"]') : null;
+
+    if (btnSubmit && btnSubmit.disabled) return false;
     if (btnSubmit) btnSubmit.disabled = true;
 
+    // Elementos do formulário
     const selectCaixa = document.getElementById('input-cxs');
     const selectResina = document.getElementById('input-resina');
     const selectFornecedor = document.getElementById('input-fornecedores');
@@ -118,7 +125,6 @@ async function enviarFormulario(event) {
     };
 
     try {
-        // Utiliza o fetchComRetry em vez do fetch comum
         const response = await fetchComRetry(API_URL, {
             method: "POST",
             headers: { 
@@ -132,16 +138,19 @@ async function enviarFormulario(event) {
 
         if (resultado.status === 'sucesso') {
             alert('Lote e nota fiscal registrados com sucesso!');
+            if (form) form.reset(); // Limpa o formulário após o sucesso
         } else {
             alert('Erro ao salvar no MySQL/Planilha: ' + (resultado.mensagem || ''));
         }
 
     } catch (erro) {
         console.error('Erro de conexão com o servidor Node.js:', erro);
-        alert('Ocorreu uma falha na comunicação com o servidor. Por favor, tente novamente.');
+        alert('Ocorreu uma falha na comunicação com o servidor.');
     } finally {
         if (btnSubmit) btnSubmit.disabled = false;
     }
+
+    return false; // Garantia extra para evitar o submit nativo
 }
 
 

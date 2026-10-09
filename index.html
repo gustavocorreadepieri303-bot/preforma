@@ -18,7 +18,7 @@
 
 
     <div class="content">
-        <form id="form" onsubmit="enviarFormulario()">
+        <form id="form" onsubmit="return enviarFormulario(event)">
             <label for="dropdown-cxs">Escolha a Preforma e Resina:</label>
             <div class="input-space">
                 <input list="dropdown-cxs" id="input-cxs" placeholder="Digite ou selecione a caixa..." required
